@@ -1,0 +1,44 @@
+使用注意事项:
+
+CoordinatorLayout继承自viewgroup,但是使用类似于framLayout,有层次结构,后面的布局会覆盖在前面的布局之上,但跟behavior属性也有很大关系,的app:layout_behavior属性,只有CoordinatorLayout的直接子布局才能响应,所以不要做徒劳无功的事
+
+CoordinatorLayout+AppBarLayout+CollapsingToolbarLayout结合起来才能产生这么神奇的效果,不要想当然的光拿着CoordinatorLayout就要玩出来(刚接触的时候我也有这种想法),累死你
+
+AppBarLayout:继承自lineLayout,使用时其他属性随lineLayou,已经响应了CoordinatorLayout的layout_behavior属性,所以他能搞出那么多特效来
+
+AppBarLayout的直接子控件可以设置的属性:layout_scrollFlags
+
+1.scroll|exitUntilCollapsed如果AppBarLayout的直接子控件设置该属性,该子控件可以滚动,向上滚动NestedScrollView出父布局(一般为CoordinatorLayout)时,会折叠到顶端,向下滚动时NestedScrollView必须滚动到最上面的时候才能拉出该布局
+
+2.scroll|enterAlways:只要向下滚动该布局就会显示出来,只要向上滑动该布局就会向上收缩
+
+3.scroll|enterAlwaysCollapsed:向下滚动NestedScrollView到最底端时该布局才会显示出来
+
+4.如果不设置改属性,则改布局不能滑动
+
+CollapsingToolbarLayout,字面意思是折叠的toolbar,它确实是起到折叠作用的,可以把自己的自布局折叠 继承自framLayout,所以它的直接子类可以设置layout_gravity来控制显示的位置,它的直接子布局可以使用的属性:app:layout_collapseMode(折叠模式):可取的值如下:
+1.pin:在滑动过程中,此自布局会固定在它所在的位置不动,直到CollapsingToolbarLayout全部折叠或者全部展开
+
+2.parallax:视察效果,在滑动过程中,不管上滑还是下滑都会有视察效果,不知道什么事视察效果自己看gif图(layout_collapseParallaxMultiplier视差因子 0~1之间取值,当设置了parallax时可以配合这个属性使用,调节自己想要的视差效果)
+
+3.不设置:跟随NestedScrollView的滑动一起滑动,NestedScrollView滑动多少距离他就会跟着走多少距离
+
+toobar最好是放在CollapsingToolbarLayout,也不是没有其他用法,但是在这套系统中一般只能放在CollapsingToolbarLayout里面,才能达到好的效果,这里toolbar同时设置layout_gravity和app:layout_collapseMode时有一些比较复杂的情况.不一一作介绍,因为一般我们只会把toolbar放在最上面(不用设置layout_gravity属性,默认的),并且设置app:layout_collapseMode为pin,让他固定在最顶端,有兴趣的自己试试其他情况,
+
+告你一个惊天大幂幂:只要CollapsingToolbarLayout里面包含有toolbar那么CollapsingToolbarLayout的折叠后高度就是toolbar的高度,相当于CollapsingToolbarLayout设置了minHeight属性
+
+再告诉你一个惊天大咪咪:CollapsingToolbarLayout折叠到最顶端时,它就是老大,会处于最上层,包括toolbar在内,所有的布局都会被他盖住,显示不出来.
+
+CollapsingToolbarLayout 自己的属性 说明,不是直接子布局可用的,是自己可以用的属性 contentScrim折叠后的颜色也是展开时的渐变颜色,效果超赞. title标题,如果设置在折叠时会动画的显示到折叠后的部分上面,拉开时会展开,很好玩的 expandedTitleMargin当title文字展开时文字的margin,当然还有marginTop等属性,脑补吧 app:collapsedTitleTextAppearance=”@style/Text”折叠时title的样式里面可以定义字体大小颜色等 app:collapsedTitleTextAppearance=”@style/Text1”折叠时title的样式里面可以定义字体大小颜色等 当然还有一些,自己试试吧,现在的这些已经完全够用了**
+
+还有最后一个问题:怎么实现固定表头,这个也简单,写一个布局放在CollapsingToolbarLayout之后,AppBarLayout之内即可,xml文件中自己找找看吧.你要是问如果放在CollapsingToolbarLayout之前,AppBarLayout之内会怎么样?这样折叠布局就不起作用了.不会折叠了.
+
+总结
+
+CoordinatorLayout是一个“加强版”的 FrameLayout,我们只需要知道他两个作用
+
+（1） 用作应用的顶层布局管理器
+
+（2） 通过为子View指定 behavior 实现自定义的交互行为。 在我们做 Material Design 风格的app时通常都使用 CoordinatorLayout 作为布局的根节点，以便实现特定的UI交互行为。
+
+我们可以用它来做各种常用的特效，如： Toolbar + TabLayout 实现 TabLayout 置顶效果 浸入式 + CollapsingToolbarLayout Fragment + 不同风格布局
